@@ -13,7 +13,9 @@ sf::CircleShape hunter_blips;
 void buildEnvir(vector<CircleShape>& a, vector<RectangleShape>& b, vector<Vector2f>& c, vector<Vector2f>& d);
 void drawTree(vector<CircleShape>& a, vector<RectangleShape>& b);
 //void checkCollision(vector<Vector2f>& b, vector<Vector2f>& c, int d[], int e[], vector<bool>& rockCollision, vector<bool>& treeCollision);
-void checkCollision(vector<Vector2f>& b, vector<Vector2f>& c, int d[], int e[], int& rockDir, int& treeDir);
+void checkCollision(vector<Vector2f>& b, vector<Vector2f>& c, int d[], int e[], bool& f,
+int& g, int& h);
+//int& rockDir, int& treeDir);
 //class user_blip
 //{
 
@@ -94,12 +96,14 @@ int main()
 
     //vector<bool> rockCollision;
     //vector<bool> treeCollision;
-    int rockDir = 0;
-    int treeDir = 0;
-
+    int rockColl = 0;
+    int treeColl = 0;
+    bool isCollision = false;
     //vincent's code
     float hunt_move[2];
     int counter=0, user_x[2], user_y[2], i;
+    char lastKeyPress = 'Z';
+    char twoKeysAgo = 'Z';
 
     user_x[0]=2;
     user_x[1]=-2;
@@ -118,8 +122,7 @@ int main()
     // Start the game loop
     while (WINDOW.isOpen())
     {
-        // Process events
-        Event event;
+            Event event;
         while (WINDOW.pollEvent(event))
         {
             // Close window: exit
@@ -132,45 +135,51 @@ int main()
                 WINDOW.close();
             }
         }
-        /*user_x[0]=2;        //fix this?
-        user_x[1]=-2;
-        user_y[0]=2;
-        user_y[1]=-2;*/
-         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-        {
-            //window.clear();
-            //if (rockDir == 2 || treeDir == 2)
-            if (rockDir != 0 || treeDir != 0)
+        // Process events
+         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
+            if ((rockColl > 0 || treeColl > 0) && (lastKeyPress == 'L'
+            || (lastKeyPress == 'D' && twoKeysAgo == 'L')
+            || (lastKeyPress == 'U' && twoKeysAgo == 'L')))
                 user_blip.move(0,0);
-            else
+            else {
+                twoKeysAgo = lastKeyPress;
+                lastKeyPress = 'L';
                 user_blip.move(user_x[1], 0);
-
+            }
         }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-        {
-            //window.clear();
-             if (rockDir != 0 || treeDir != 0)
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
+            if ((rockColl > 0 || treeColl > 0) && (lastKeyPress == 'R'
+            || (lastKeyPress == 'D' && twoKeysAgo == 'R')
+            || (lastKeyPress == 'U' && twoKeysAgo == 'R')))
                 user_blip.move(0,0);
-            else
+            else {
+                twoKeysAgo = lastKeyPress;
+                lastKeyPress = 'R';
                 user_blip.move(user_x[0], 0);
-
+            }
         }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
-        {
-            if (rockDir != 0 || treeDir != 0)
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
+            if ((rockColl > 0 || treeColl > 0) && (lastKeyPress == 'U'
+            || (lastKeyPress == 'L' && twoKeysAgo == 'U')
+            || (lastKeyPress == 'R' && twoKeysAgo == 'U')))
                 user_blip.move(0,0);
-            else
-            user_blip.move(0, user_y[1]);
-
+            else {
+                twoKeysAgo = lastKeyPress;
+                lastKeyPress = 'U';
+                user_blip.move(0, user_y[1]);
+            }
         }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
-        {
-            if (rockDir != 0 || treeDir != 0)
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
+            if ((rockColl > 0 || treeColl > 0) && (lastKeyPress == 'D'
+            || (lastKeyPress == 'L' && twoKeysAgo == 'D')
+            || (lastKeyPress == 'R' && twoKeysAgo == 'D')))
                 user_blip.move(0,0);
-            else
+            else {
+                twoKeysAgo = lastKeyPress;
+                lastKeyPress = 'D';
                 user_blip.move(0, user_y[0]);
+            }
         }
-
 
         hunt_progress(user_blip,hunter_blips, hunt_move, counter);
 
@@ -187,7 +196,7 @@ int main()
         for (int k=0; k<treeTop.size(); k++)
             WINDOW.draw(treeTop[k]);
 
-        checkCollision(treeCoords, rockCoords, user_x, user_y, rockDir, treeDir);
+        checkCollision(treeCoords, rockCoords, user_x, user_y, isCollision, rockColl, treeColl);
 
         WINDOW.display();
         counter++;
@@ -267,40 +276,27 @@ void drawTree(vector<CircleShape>& treeTop, vector<RectangleShape>& treeGroup) {
 }
 
 void checkCollision(vector<Vector2f>& treeCoords, vector<Vector2f>& rockCoords,
-int user_x[], int user_y[], int& rockDir, int&treeDir) {
-//vector<bool>& rockCollision, vector<bool>& treeCollision) {
+int user_x[], int user_y[], bool& isCollision, int& rockColl, int& treeColl) {
     Vector2f userPos = user_blip.getPosition();
     double rockDist;
+    rockColl = 0;
+    treeColl = 0;
     for (int i=0; i<rockCoords.size(); i++) {       //check for collision with rock
         rockDist = sqrt((abs(rockCoords[i].x-userPos.x)*abs(rockCoords[i].x-userPos.x))
                 + (abs(rockCoords[i].y-userPos.y)*abs(rockCoords[i].y-userPos.y)));
         if (rockDist <= 30) {
-            if (rockCoords[i].x-userPos.x > 0)
-                rockDir = 1;
-            else if (rockCoords[i].x-userPos.x < 0)
-                rockDir = 2;
-            else if (rockCoords[i].y-userPos.y > 0)
-                rockDir = 3;
-            else if (rockCoords[i].y-userPos.y < 0)
-                rockDir = 4;
+            isCollision = true;
+            rockColl++;
         }
-        //else
-          //  rockDir = 0;
-            //rockCollision = true;
+        else
+            isCollision = false;
     }
-    for (int j=0; j<treeCoords.size(); j++) {
+    for (int j=0; j<treeCoords.size(); j++) {       //check for collision with tree
         if ((abs(userPos.x - treeCoords[j].x) <= 30) && (abs(userPos.y - treeCoords[j].y) <= 60)) {
-        user_blip.move(0,0);
-            if (treeCoords[j].x-userPos.x > 0)
-                treeDir = 1;
-            else if (treeCoords[j].x-userPos.x < 0)
-                treeDir = 2;
-            else if (treeCoords[j].y-userPos.y > 0)
-                treeDir = 3;
-            else if (treeCoords[j].y-userPos.y < 0)
-                treeDir = 4;
+            treeColl++;
+            isCollision = true;
         }
-        //else treeDir = 0;
-            //treeCollision = true;
+        else
+            isCollision = false;
     }
 }
