@@ -1,0 +1,41 @@
+void draw_dynamics(Hunter hunt_array[], sf::CircleShape user_blip, const double user_health) {
+    int i;
+    for (i=0;i<Hunt_Num;i++)
+    {
+        window.draw(hunt_array[i]);
+    }
+
+    if(user_health>=0)
+    {
+        sf::Vector2f health_pos=user_blip.getPosition();
+        sf::RectangleShape health_bar_wipe(sf::Vector2f(33, 100-user_health));
+        health_bar_wipe.setPosition(health_pos.x+352,health_pos.y-173);
+        health_bar_wipe.setFillColor(sf::Color::White);
+        window.draw(health_bar_wipe);
+    }
+
+    window.draw(user_blip);
+}
+
+void draw_statics() {
+    sf::Vector2f health_pos=user_blip.getPosition();
+    sf::RectangleShape health_bar(sf::Vector2f(33, 100));
+    health_bar.setPosition(health_pos.x+352,health_pos.y-173);     //change
+    health_bar.setFillColor(sf::Color::Red);
+
+    sf::RectangleShape health_bar_background(sf::Vector2f(37, 104));
+    health_bar_background.setFillColor(sf::Color::White);
+    health_bar_background.setPosition(health_pos.x+350,health_pos.y-175);      //change
+
+    window.draw(health_bar_background);
+    window.draw(health_bar);
+}
+
+void set_user_blip(sf::CircleShape& blip,int user_x_speed[2],int user_y_speed[2]) {
+    blip.setFillColor(sf::Color::Black);
+    blip.setOrigin(20,20);
+    blip.setPosition(500,500);
+    //give user some default speed values
+    user_x_speed[0]=user_speed; user_x_speed[1]=user_speed*-1;
+    user_y_speed[0]=user_speed; user_y_speed[1]=user_speed*-1;
+}
