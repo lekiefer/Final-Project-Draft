@@ -1,0 +1,21 @@
+void drawSpace(vector<RectangleShape>& outerSpace) {
+    RectangleShape rect1(Vector2f(screenWid,500));
+    RectangleShape rect2(Vector2f(500,screenHei));
+    rect1.setFillColor(Color::Black);
+    rect2.setFillColor(Color::Black);
+    for (int i=0; i<2; i++)
+        outerSpace.push_back(rect1);
+    for (int j=0; j<2; j++)
+        outerSpace.push_back(rect2);
+    outerSpace[0].setPosition(0,0);
+    outerSpace[1].setPosition(0,screenHei-500);
+    outerSpace[2].setPosition(0,0);
+    outerSpace[3].setPosition(screenWid-500,0);
+}
+
+
+
+    vector<RectangleShape> outerSpace;
+    drawSpace(outerSpace);
+    
+    drawEnvir(pondGroup, treeGroup, treeTop, starGroup, outerSpace);
