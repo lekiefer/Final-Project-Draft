@@ -1,0 +1,11 @@
+    At end of checkColl function
+    
+    Vector2f starCount_pos=user_blip.getPosition();
+    string a = to_string(starCount);
+    Text starText("Star count: " + a, font, 16);
+    starText.setPosition(starCount_pos.x + 310, starCount_pos.y + 10);
+    starText.setColor(Color::Blue);
+    window.draw(starText);
+    
+    
+    ///also need to pass Font font to "check collision" function
