@@ -1,0 +1,58 @@
+    int pondColl, treeColl, starColl;
+    int starCount = 0;
+    bool isCollision = false;
+
+    bool pause = true;
+    intro.setLoop(true);
+    intro.play();
+
+    while (window.isOpen())
+    {
+        Event event;
+        while (window.pollEvent(event)) {
+            intro.setLoop(true);
+            if (event.type == Event::Closed)
+                window.close();
+            else  if (event.type == Event::KeyPressed) {
+                    pause = false;
+                    intro.stop();
+            }
+        }
+        if (pause)
+            intro_text(font, intro);
+        else if (!pause) {
+            while (user_health>0 && starCount<10) {
+                window.clear(Color(10,150,10));
+                drawEnvir(pondGroup, treeGroup, treeTop, starGroup);
+                user_moves(user_blip,user_x_speed,user_y_speed, pondColl, treeColl, lastKeyPress, twoKeysAgo);
+                draw_statics();
+                hunters_move(user_blip,hunt_array, hunt_move, counter,run_toggle,tog_counter,user_health);
+                draw_dynamics(hunt_array,user_blip,user_health);
+                checkCollision(treeCoords, pondCoords, starCoords, starGroup, user_blip, isCollision, pondColl, treeColl,
+                    starColl, ding, crash, splash, starCount);
+                view.setCenter(sf::Vector2f(user_blip.getPosition()));
+                window.setView(view);
+                window.display();
+            }
+            if (starCount >= 10) {
+                window.clear(sf::Color::Red);
+                sf::Text text;
+                text.setFont(font);
+                text.setString("YOU WIN!");
+                text.setCharacterSize(100);
+                text.setPosition(0,0);
+                window.draw(text);
+                window.display();
+            }
+            else if (starCount < 10) {
+                window.clear(sf::Color::Blue);
+                window.setSize(sf::Vector2u(800,800));
+                view.setCenter(400,400);
+                sf::Text text; text.setFont(font); text.setString("GAME OVER.");text.setCharacterSize(100);text.setPosition(80,325);
+
+                window.draw(text);
+                window.setView(view);
+                window.display();
+            }
+        }
+    }
