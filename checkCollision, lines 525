@@ -1,0 +1,40 @@
+void checkCollision(vector<Vector2f>& treeCoords, vector<Vector2f>& pondCoords, vector<Vector2f>& starCoords,
+vector<CircleShape>& starGroup, CircleShape& user_blip, bool& isCollision,
+int& pondColl, int& treeColl, int& starColl, Music& ding, Music& crash, Music& splash, int& starCount) {
+    Vector2f userPos = user_blip.getPosition();         //get user blip position to check if it collides with pond, trees, and stars
+    double pondDist, starDist;
+    pondColl = 0;
+    treeColl = 0;
+    starColl = 0;
+    for (int i=0; i<pondCoords.size(); i++) {       //check for collision with pond
+        pondDist = sqrt((abs(pondCoords[i].x-userPos.x)*abs(pondCoords[i].x-userPos.x))
+                + (abs(pondCoords[i].y-userPos.y)*abs(pondCoords[i].y-userPos.y)));
+        if (pondDist <= 70) {
+            isCollision = true;
+            pondColl++;
+            splash.play();
+        }
+        else
+            isCollision = false;
+    }
+    for (int j=0; j<treeCoords.size(); j++) {       //check for collision with tree
+        if ((abs(userPos.x - treeCoords[j].x) <= 30) && (abs(userPos.y - treeCoords[j].y) <= 70)) {
+            treeColl++;
+            isCollision = true;
+            crash.play();
+        }
+        else
+            isCollision = false;
+    }
+    for (int k=0; k<starCoords.size(); k++) {       //check for collision with star
+        starDist = sqrt((abs(starCoords[k].x-userPos.x)*abs(starCoords[k].x-userPos.x))
+                + (abs(starCoords[k].y-userPos.y)*abs(starCoords[k].y-userPos.y)));
+        if (starDist <= 25) {
+            starColl++;
+            starCount++;
+            ding.play();
+            starGroup[k].setPosition(10000,10000);
+            starCoords[k] = starGroup[k].getPosition();
+        }
+    }
+}
