@@ -1,0 +1,17 @@
+ if (hunters[i].getFillColor()==sf::Color::Blue)
+                    {
+                        hunters[i].setSpeed(hunters[i].getSpeed()+(hunters[j].getSpeed()/2));
+                        hunters[i].setDamage(hunters[i].getDamage()+(hunters[j].getDamage()/2));
+                        hunters[i].setAccuracy(hunters[i].getAccuracy()+(hunters[j].getAccuracy()*10));
+                        hunters[i].setRadius(hunters[i].getRadius()+(hunters[j].getRadius()/5));
+                        hunters[j].setAccuracy(0);
+                        if (hunters[j].getFillColor()==sf::Color::Blue)
+                        {
+                            hunters[j].setPosition(10000+100*j,10000+100*j);
+                            hunters[j].setFillColor(sf::Color::White);
+                            hunters[j].setRadius(.1);
+                        }
+                        else
+                        {
+                            hunters[j].setPosition(12000,12000);
+                        }
